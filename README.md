@@ -1,45 +1,48 @@
-# phpBB MCP
+# phpBB MCP — native extension
 
-A native, open-source [Model Context Protocol](https://modelcontextprotocol.io/) endpoint for phpBB.
+Open-source, native [Model Context Protocol](https://modelcontextprotocol.io/) integration for phpBB 3.3, designed for ordinary PHP hosting and ACP installation.
 
-> **Status: 0.1.0-alpha — untested foundation, not production-ready.** This branch is intended for integration review against a real phpBB 3.3 install. Do not expose it publicly or grant tokens until all compatibility, permission and security checks pass.
+> **0.1.0-alpha / DRAFT — NOT PRODUCTION READY.** No completed phpBB integration tests exist yet. Do not expose this alpha to the internet until security and integration gates below have passed.
 
-## Purpose
+## How users will install (after validation)
 
-Build an easy-to-install phpBB extension so MCP clients (ChatGPT, Codex, Hermes and other compatible clients) can safely interact with phpBB. The project deliberately does **not** modify phpBB core files or require Node.js, Docker or a daemon.
+1. Back up the forum database and files.
+2. Download the phpbb-mcp-extension ZIP artifact from a passing GitHub Actions build.
+3. Extract ZIP into the phpBB **ext/** folder, resulting in **ext/topofgames/phpbbmcp/**.
+4. ACP → Customise → Manage extensions → enable phpBB MCP.
+5. ACP → Extensions → phpBB MCP. A **board founder** activates the endpoint and creates a scoped access token.
+6. Make sure the phpBB server URL is HTTPS. Reverse proxies must sanitize forwarded headers and prevent direct origin access.
+7. Connect an HTTP-based MCP client to **https://your-forum.example/app.php/mcp** (URL rewriting may shorten the path), with **Authorization: Bearer TOKEN**.
 
-## Installation (after validation)
+No Node.js, Docker, special process, or command-line access is needed for the phpBB extension itself. Credentials are shown once and can be revoked.
 
-1. Back up the phpBB database and files.
-2. Place this extension under **phpBB_ROOT/ext/topofgames/phpbbmcp/** (the repository root is the extension root, not an extra nested folder).
-3. ACP → Customise → Manage extensions → enable **phpBB MCP**.
-4. ACP → Extensions → **phpBB MCP**. Only a board founder may enable the endpoint or create a credential.
-5. Require working HTTPS and configure any reverse proxy as trusted in phpBB.
-6. Create a short-lived, least-privilege token. Copy the value exactly once.
-7. Connect a compatible MCP client to **https://your-forum.example/app.php/mcp** using an Authorization: Bearer header. Route rewriting may change the visible URL.
+## Included in the alpha source
 
-The endpoint is disabled by default. Tokens expire after 1–90 days and can be revoked.
+- Native phpBB extension manifests, routes, services, migrations and founder-only ACP controls.
+- Stateless HTTP POST endpoint with JSON-RPC and modern **2026-07-28** MCP request format, including server/discover, mirrored request headers, request metadata, resultType and cache hints.
+- Compatibility with legacy MCP **2025-06-18** and **2025-11-25** initialize clients.
+- HTTPS and strict same-origin enforcement; arbitrary cross-origin browser clients are intentionally not supported.
+- Bearer tokens: SHA-256 hashes at rest, scoped grants, 1–90 day expiry, revocation, per-token rate budget.
+- Read-only tools: forums.list, forums.get, topics.list, topics.get, posts.list, posts.get, posts.search, users.get_public.
+- English and Romanian ACP strings.
+- CI lints the extension for PHP 7.4, 8.1 and 8.4; pure transport smoke tests and a ZIP build are provided.
+- ZIP generation alone does **not** establish phpBB compatibility or security.
 
-## Current implemented foundation
+## Required before beta/stable
 
-- PHP-only extension packaging, routing, ACP and a migration for credential storage.
-- Stateless MCP-compatible JSON-RPC over POST, initialize/ping/tools/list/tools/call.
-- Read-only tools for forums, topics, posts, search, and public user profiles.
-- Token hashes in the database; per-token scopes, expiry and revocation.
-- Enforced HTTPS, request-body limit, and basic per-token rate limiting.
-- Anonymous/public forum ACL gating on forum and content reads.
+1. Integrate with a clean phpBB **3.3.19** instance to validate service wiring, ACP, SQL migration, URL routing and PHP compatibility.
+2. Run privacy and ACL negative tests for hidden/passworded forums, moderators, restricted categories, unapproved posts/topics, private profiles and newly changed permissions.
+3. Replace slow SQL LIKE post-text searching with phpBB's native search index.
+4. Verify HTTPS reverse-proxy cases, token expiry/revocation, CSRF and rate-limiter concurrency. Add audit logging and secure diagnostics.
+5. Add separate founder-controlled **write scopes** and native phpBB posting/moderation API integrations. Dangerous operations require confirmations, audit trails and backup guidance.
+6. Validate MCP Inspector/clients, add documentation/screenshots and tagged release checksums.
 
-## Known gaps to resolve before release
+## Security principles
 
-- Run integration tests on a clean phpBB 3.3 instance, including migrations, ACP routing, guest ACL checks, and API calls. The repository has **not** yet passed these tests.
-- Verify PHP/phpBB compatibility; current code uses PHP 8's \`array_is_list\` and therefore **needs PHP 8.1+** unless polyfilled.
-- Make rate limiting atomic across windows and add full audit logging and tool-level permissions.
-- Harden search for large boards and use native phpBB search and content processing.
-- Complete the authorization model and HTTP transport compliance review against the current MCP specification (including Origin validation and negotiation headers).
-- Add safe write tools using phpBB's native posting/moderation APIs, never direct database writes for content.
-- Automated release ZIP and CI, translated ACP strings, docs and browser tests.
-- Confirm all phpBB compatibility and data-privacy requirements before declaring a stable release.
+The MCP endpoint is **disabled by default**. No tokens exist until a founder creates one. All currently advertised tools are read-only and intended to reveal only **public anonymous-readable** content. No credential can bypass forum privacy. Runtime permission tests remain a release-blocker.
 
-## Licensing
+This alpha uses static Bearer headers rather than a full OAuth flow. OAuth-only clients will require additional integration in a later milestone.
 
-GPL-2.0-only, matching the project's existing license file.
+## License
+
+GPL-2.0-only. See LICENSE.

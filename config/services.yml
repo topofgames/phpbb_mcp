@@ -11,6 +11,9 @@ services:
             - '@dbal.conn'
             - '%core.table_prefix%'
 
+    topofgames.phpbbmcp.transport_validator:
+        class: topofgames\phpbbmcp\service\transport_validator
+
     topofgames.phpbbmcp.controller:
         class: topofgames\phpbbmcp\controller\mcp_controller
         arguments:
@@ -18,3 +21,4 @@ services:
             - '@request'
             - '@topofgames.phpbbmcp.key_store'
             - '@topofgames.phpbbmcp.reader'
+            - '@topofgames.phpbbmcp.transport_validator'

@@ -1,0 +1,49 @@
+name: phpBB MCP CI
+
+on:
+  push:
+    branches: [main, 'feature/**']
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  php-lint-and-transport-tests:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['7.4', '8.1', '8.4']
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          coverage: none
+      - name: PHP syntax
+        run: |
+          find . -name '*.php' -not -path './vendor/*' -print0 | xargs -0 -n 1 php -l
+      - name: Transport unit smoke tests
+        run: php tests/transport_validator_test.php
+
+  extension-zip:
+    if: github.event_name != 'pull_request'
+    needs: php-lint-and-transport-tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Package ext/topofgames/phpbbmcp
+        run: |
+          mkdir -p build/topofgames/phpbbmcp
+          rsync -a --exclude='.git' --exclude='.github' --exclude='tests' \
+            --exclude='build' --exclude='.gitignore' ./ build/topofgames/phpbbmcp/
+          (cd build && zip -q -r ../phpbb-mcp-extension.zip topofgames)
+          unzip -l phpbb-mcp-extension.zip | head -30
+      - uses: actions/upload-artifact@v4
+        with:
+          name: phpbb-mcp-extension
+          path: phpbb-mcp-extension.zip
+          if-no-files-found: error
