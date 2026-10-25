@@ -1,0 +1,4 @@
+topofgames_phpbbmcp_endpoint:
+    path: /mcp
+    defaults: { _controller: topofgames.phpbbmcp.controller:handle }
+    methods: [POST]

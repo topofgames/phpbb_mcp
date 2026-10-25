@@ -1,0 +1,45 @@
+<!-- INCLUDE overall_header.html -->
+<h1>{L_ACP_PHPBBMCP_TITLE}</h1>
+<p>{L_ACP_PHPBBMCP_EXPLAIN}</p>
+<!-- IF MCP_NEW_KEY -->
+<div class="successbox"><h3>{L_ACP_PHPBBMCP_ONETIME}</h3>
+<p><code>{MCP_NEW_KEY}</code></p></div>
+<!-- ENDIF -->
+<form method="post" action="{U_ACTION}">
+<fieldset><legend>{L_SETTINGS}</legend>
+<label><input type="checkbox" name="enabled" value="1"<!-- IF MCP_ENABLED --> checked="checked"<!-- ENDIF --> /> {L_ACP_PHPBBMCP_ENABLE}</label>
+<p><label>{L_ACP_PHPBBMCP_TRUSTED_PROXIES}: <input type="text" name="trusted_proxies" value="{MCP_TRUSTED_PROXIES}" maxlength="1024" style="width: 65%;" /></label></p>
+<p>{L_ACP_PHPBBMCP_PROXY_HELP}</p>
+<input type="hidden" name="action" value="settings" />
+<p><input class="button1" type="submit" name="submit" value="{L_SUBMIT}" /></p>
+{S_FORM_TOKEN}
+</fieldset></form>
+<form method="post" action="{U_ACTION}">
+<fieldset><legend>{L_ACP_PHPBBMCP_CREATE}</legend>
+<dl><dt>{L_ACP_PHPBBMCP_LABEL}</dt><dd><input name="label" maxlength="80" required="required" /></dd></dl>
+<dl><dt>{L_ACP_PHPBBMCP_DAYS}</dt><dd><input type="number" name="days" min="1" max="90" value="30" /></dd></dl>
+<dl><dt>{L_ACP_PHPBBMCP_SCOPES}</dt><dd>
+<label><input type="checkbox" name="scopes[]" value="forums:read" checked="checked" /> Forums</label>
+<label><input type="checkbox" name="scopes[]" value="topics:read" checked="checked" /> Topics</label>
+<label><input type="checkbox" name="scopes[]" value="posts:read" /> Posts</label>
+<label><input type="checkbox" name="scopes[]" value="users:read" /> Public profiles</label>
+</dd></dl>
+<input type="hidden" name="action" value="create" />
+<p><input class="button1" type="submit" name="submit" value="{L_ACP_PHPBBMCP_CREATE}" /></p>
+{S_FORM_TOKEN}
+</fieldset></form>
+<h2>{L_ACP_PHPBBMCP_KEYS}</h2>
+<table class="table1"><thead><tr><th>Label</th><th>Prefix</th><th>Scopes</th><th>Expires</th><th>Status</th><th></th></tr></thead>
+<tbody><!-- BEGIN keys -->
+<tr><td>{keys.LABEL}</td><td><code>{keys.PREFIX}</code></td><td>{keys.SCOPES}</td><td>{keys.EXPIRES}</td><td><!-- IF keys.REVOKED -->Revoked<!-- ELSE -->Active<!-- ENDIF --></td><td>
+<!-- IF not keys.REVOKED -->
+<form method="post" action="{U_ACTION}">
+<input type="hidden" name="action" value="revoke" />
+<input type="hidden" name="key_id" value="{keys.ID}" />
+<input class="button2" type="submit" name="submit" value="{L_DELETE}" />
+{S_FORM_TOKEN}
+</form>
+<!-- ENDIF -->
+</td></tr>
+<!-- END keys --></tbody></table>
+<!-- INCLUDE overall_footer.html -->
