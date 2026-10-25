@@ -30,6 +30,7 @@ jobs:
         run: |
           php tests/transport_validator_test.php
           php tests/tls_policy_test.php
+          php tests/reader_acl_test.php
 
   extension-zip:
     if: github.event_name != 'pull_request'
