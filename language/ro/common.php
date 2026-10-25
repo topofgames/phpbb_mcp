@@ -10,4 +10,6 @@ $lang = array_merge($lang, [
     'ACP_PHPBBMCP_DAYS' => 'Valabilitate în zile (1–90)',
     'ACP_PHPBBMCP_SCOPES' => 'Permisiuni de acces',
     'ACP_PHPBBMCP_KEYS' => 'Chei de acces',
+    'ACP_PHPBBMCP_TRUSTED_PROXIES' => 'Adresele IP ale proxy-urilor de încredere',
+    'ACP_PHPBBMCP_PROXY_HELP' => 'IP-uri exacte separate prin virgulă. Lasă gol pentru HTTPS direct. Configurează doar proxy-uri controlate de tine care elimină antetele Forwarded nesigure.',
 ]);

@@ -29,6 +29,17 @@ class main_module
             if ($action === 'settings') {
                 $config->set('topofgames_phpbbmcp_enabled',
                     $request->variable('enabled', 0) ? 1 : 0);
+                $raw_proxies = trim($request->variable('trusted_proxies', ''));
+                $list = $raw_proxies === '' ? [] : array_map('trim', explode(',', $raw_proxies));
+                if (count($list) > 16 || strlen($raw_proxies) > 1024) {
+                    trigger_error('Too many trusted proxies.' . adm_back_link($this->u_action), E_USER_WARNING);
+                }
+                foreach ($list as $address) {
+                    if (!filter_var($address, FILTER_VALIDATE_IP)) {
+                        trigger_error('Invalid trusted proxy IP address.' . adm_back_link($this->u_action), E_USER_WARNING);
+                    }
+                }
+                $config->set('topofgames_phpbbmcp_trusted_proxies', implode(',', array_unique($list)));
             } elseif ($action === 'create') {
                 try {
                     $new_key = $store->issue($request->variable('label', '', true),
@@ -46,6 +57,7 @@ class main_module
             'U_ACTION' => $this->u_action,
             'MCP_ENABLED' => !empty($config['topofgames_phpbbmcp_enabled']),
             'MCP_NEW_KEY' => $new_key,
+            'MCP_TRUSTED_PROXIES' => $config['topofgames_phpbbmcp_trusted_proxies'] ?? '',
         ]);
         foreach ($store->list_keys() as $row) {
             $template->assign_block_vars('keys', [

@@ -10,14 +10,16 @@ class mcp_controller
     private $keys;
     private $reader;
     private $transport;
+    private $tls;
 
-    public function __construct($config, $request, $keys, $reader, $transport)
+    public function __construct($config, $request, $keys, $reader, $transport, $tls)
     {
         $this->config = $config;
         $this->request = $request;
         $this->keys = $keys;
         $this->reader = $reader;
         $this->transport = $transport;
+        $this->tls = $tls;
     }
 
     private function json($data, $status = 200)
@@ -55,10 +57,15 @@ class mcp_controller
         if (empty($this->config['topofgames_phpbbmcp_enabled'])) {
             return $this->error(null, -32000, 'MCP endpoint disabled', 503);
         }
-        // HTTPS is required. Reverse proxies must prevent direct access and
-        // sanitize forwarded headers; phpBB is_secure() trusts X-Forwarded-Proto.
-        if (!$this->request->is_secure() ||
-            strtolower((string) ($this->config['server_protocol'] ?? '')) !== 'https://') {
+        // phpBB's is_secure() trusts X-Forwarded-Proto even for unknown hosts.
+        // Instead only honor that header from explicitly trusted proxy IPs.
+        if (!$this->tls->is_allowed(
+            (string) ($this->config['server_protocol'] ?? ''),
+            (string) $this->request->server('HTTPS', ''),
+            (string) $this->request->server('REMOTE_ADDR', ''),
+            (string) $this->request->header('X-Forwarded-Proto', ''),
+            (string) ($this->config['topofgames_phpbbmcp_trusted_proxies'] ?? '')
+        )) {
             return $this->error(null, -32000, 'HTTPS required', 403);
         }
 

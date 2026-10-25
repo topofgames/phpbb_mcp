@@ -41,6 +41,7 @@ class v_0_1_0 extends \phpbb\db\migration\migration
     {
         return [
             ['config.add', ['topofgames_phpbbmcp_enabled', 0]],
+            ['config.add', ['topofgames_phpbbmcp_trusted_proxies', '']],
             ['module.add', ['acp', 'ACP_CAT_DOT_MODS', 'ACP_PHPBBMCP_TITLE']],
             ['module.add', ['acp', 'ACP_PHPBBMCP_TITLE', [
                 'module_basename' => '\topofgames\phpbbmcp\acp\main_module',

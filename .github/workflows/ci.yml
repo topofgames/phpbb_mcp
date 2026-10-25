@@ -27,7 +27,9 @@ jobs:
         run: |
           find . -name '*.php' -not -path './vendor/*' -print0 | xargs -0 -n 1 php -l
       - name: Transport unit smoke tests
-        run: php tests/transport_validator_test.php
+        run: |
+          php tests/transport_validator_test.php
+          php tests/tls_policy_test.php
 
   extension-zip:
     if: github.event_name != 'pull_request'

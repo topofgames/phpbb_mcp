@@ -8,6 +8,8 @@
 <form method="post" action="{U_ACTION}">
 <fieldset><legend>{L_SETTINGS}</legend>
 <label><input type="checkbox" name="enabled" value="1"<!-- IF MCP_ENABLED --> checked="checked"<!-- ENDIF --> /> {L_ACP_PHPBBMCP_ENABLE}</label>
+<p><label>{L_ACP_PHPBBMCP_TRUSTED_PROXIES}: <input type="text" name="trusted_proxies" value="{MCP_TRUSTED_PROXIES}" maxlength="1024" style="width: 65%;" /></label></p>
+<p>{L_ACP_PHPBBMCP_PROXY_HELP}</p>
 <input type="hidden" name="action" value="settings" />
 <p><input class="button1" type="submit" name="submit" value="{L_SUBMIT}" /></p>
 {S_FORM_TOKEN}

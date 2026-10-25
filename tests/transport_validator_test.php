@@ -21,6 +21,7 @@ $body = [
         '_meta' => [
             'io.modelcontextprotocol/protocolVersion' => '2026-07-28',
             'io.modelcontextprotocol/clientCapabilities' => [],
+            'io.modelcontextprotocol/clientInfo' => ['name' => 'phpbb-mcp-test', 'version' => '1.0'],
         ],
     ],
 ];

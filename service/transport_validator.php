@@ -62,6 +62,13 @@ class transport_validator
                 !is_array($meta['io.modelcontextprotocol/clientCapabilities'])) {
                 return ['status' => 400, 'code' => -32600, 'message' => 'Missing MCP request metadata'];
             }
+            $info = $meta['io.modelcontextprotocol/clientInfo'] ?? null;
+            if (!is_array($info) || !is_string($info['name'] ?? null) ||
+                !is_string($info['version'] ?? null) ||
+                trim($info['name']) === '' || trim($info['version']) === '' ||
+                strlen($info['name']) > 128 || strlen($info['version']) > 64) {
+                return ['status' => 400, 'code' => -32600, 'message' => 'Missing valid clientInfo'];
+            }
             if ($meta['io.modelcontextprotocol/protocolVersion'] !== self::CURRENT ||
                 $method_header !== $method) {
                 return ['status' => 400, 'code' => -32020, 'message' => 'MCP header mismatch'];

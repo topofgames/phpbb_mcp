@@ -195,6 +195,9 @@ class reader
                     ' AND p.post_visibility = 1 AND t.topic_visibility = 1'));
                 return ['item' => $row && $this->public_forum((int) $row['forum_id']) ? $row : null];
             case 'users.get_public':
+                if (!$this->guest_can('u_viewprofile', 0)) {
+                    return ['item' => null];
+                }
                 $id = $this->required_id($args, 'user_id');
                 return ['item' => $this->first($this->fetch('SELECT user_id, username,
                     user_regdate, user_posts FROM ' . USERS_TABLE .

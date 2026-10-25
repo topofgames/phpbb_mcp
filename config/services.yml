@@ -14,6 +14,9 @@ services:
     topofgames.phpbbmcp.transport_validator:
         class: topofgames\phpbbmcp\service\transport_validator
 
+    topofgames.phpbbmcp.tls_policy:
+        class: topofgames\phpbbmcp\service\tls_policy
+
     topofgames.phpbbmcp.controller:
         class: topofgames\phpbbmcp\controller\mcp_controller
         arguments:
@@ -22,3 +25,4 @@ services:
             - '@topofgames.phpbbmcp.key_store'
             - '@topofgames.phpbbmcp.reader'
             - '@topofgames.phpbbmcp.transport_validator'
+            - '@topofgames.phpbbmcp.tls_policy'
