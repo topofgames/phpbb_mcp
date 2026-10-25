@@ -84,18 +84,22 @@ class key_store
             return null;
         }
 
-        // Database-enforced sliding fixed-minute budget; checked on every call.
+        // One conditional UPDATE enforces the limit under concurrent requests.
+        // Assign count first: MySQL evaluates single-table SET expressions
+        // left-to-right, so the CASE must read the previous window_start.
         $id = (int) $row['key_id'];
         $now = time();
-        if ((int) $row['window_start'] <= $now - 60) {
-            $this->db->sql_query('UPDATE ' . $this->table .
-                ' SET window_start = ' . $now . ', window_count = 0 WHERE key_id = ' . $id .
-                ' AND window_start <= ' . ($now - 60));
-        }
+        $cutoff = $now - 60;
         $this->db->sql_query('UPDATE ' . $this->table .
-            ' SET window_count = window_count + 1, last_used_at = ' . $now .
-            ' WHERE key_id = ' . $id . ' AND window_count < 60 AND revoked_at = 0');
-        if ($this->db->sql_affectedrows() < 1) {
+            ' SET window_count = CASE WHEN window_start <= ' . $cutoff .
+            ' THEN 1 ELSE window_count + 1 END, ' .
+            'window_start = CASE WHEN window_start <= ' . $cutoff .
+            ' THEN ' . $now . ' ELSE window_start END, ' .
+            'last_used_at = ' . $now .
+            ' WHERE key_id = ' . $id .
+            ' AND revoked_at = 0 AND expires_at > ' . $now .
+            ' AND (window_start <= ' . $cutoff . ' OR window_count < 60)');
+        if ($this->db->sql_affectedrows() !== 1) {
             return ['rate_limited' => true];
         }
         $row['scopes'] = explode(',', $row['scope_list']);
