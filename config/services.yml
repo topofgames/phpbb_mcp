@@ -1,0 +1,20 @@
+services:
+    topofgames.phpbbmcp.key_store:
+        class: topofgames\phpbbmcp\service\key_store
+        arguments:
+            - '@dbal.conn'
+            - '%core.table_prefix%'
+
+    topofgames.phpbbmcp.reader:
+        class: topofgames\phpbbmcp\service\reader
+        arguments:
+            - '@dbal.conn'
+            - '%core.table_prefix%'
+
+    topofgames.phpbbmcp.controller:
+        class: topofgames\phpbbmcp\controller\mcp_controller
+        arguments:
+            - '@config'
+            - '@request'
+            - '@topofgames.phpbbmcp.key_store'
+            - '@topofgames.phpbbmcp.reader'
