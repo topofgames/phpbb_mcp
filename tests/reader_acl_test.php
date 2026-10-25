@@ -30,6 +30,19 @@ namespace topofgames\phpbbmcp\tests {
                     }
                 }
             }
+            if (strpos($sql, 'INNER JOIN') === false && preg_match('/WHERE forum_id = (\d+)/', $sql, $m)) {
+                $f = $this->forums[(int) $m[1]] ?? null;
+                if ($f) {
+                    $rows[] = [
+                        'forum_id' => $f['forum_id'],
+                        'parent_id' => 2,
+                        'forum_name' => 'Public test forum',
+                        'forum_desc' => '',
+                        'forum_topics_approved' => 0,
+                        'forum_posts_approved' => 0,
+                    ];
+                }
+            }
             return new FakeResult(array_slice($rows, $offset, $limit));
         }
         public function sql_fetchrow($result) {
