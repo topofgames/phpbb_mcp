@@ -2,7 +2,7 @@
 
 Open-source, native [Model Context Protocol](https://modelcontextprotocol.io/) integration for phpBB 3.3, designed for ordinary PHP hosting and ACP installation.
 
-> **0.1.0-alpha / DRAFT — NOT PRODUCTION READY.** No completed phpBB integration tests exist yet. Do not expose this alpha to the internet until security and integration gates below have passed.
+> **0.1.1-alpha / DRAFT — NOT PRODUCTION READY.** No completed phpBB integration tests exist yet. Do not expose this alpha to the internet until security and integration gates below have passed.
 
 ## How users will install (after validation)
 
@@ -23,7 +23,7 @@ No Node.js, Docker, special process, or command-line access is needed for the ph
 - Compatibility with legacy MCP **2025-06-18** and **2025-11-25** initialize clients.
 - HTTPS and strict same-origin enforcement; arbitrary cross-origin browser clients are intentionally not supported.
 - Bearer tokens: SHA-256 hashes at rest, scoped grants, 1–90 day expiry, revocation, per-token rate budget.
-- Read-only tools: forums.list, forums.get, topics.list, topics.get, posts.list, posts.get, posts.search, users.get_public.
+- Seven read-only tools: forums.list, forums.get, topics.list, topics.get, posts.list, posts.get, users.get_public.
 - English and Romanian ACP strings.
 - CI lints the extension for PHP 7.4, 8.1 and 8.4; pure transport smoke tests and a ZIP build are provided.
 - ZIP generation alone does **not** establish phpBB compatibility or security.
