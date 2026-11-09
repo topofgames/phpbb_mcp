@@ -152,13 +152,39 @@ class reader
         list($limit, $offset) = $this->paging($args);
         switch ($name) {
             case 'forums.list':
-                $items = $this->fetch('SELECT forum_id, parent_id, forum_name, forum_desc,
-                    forum_topics_approved, forum_posts_approved FROM ' . $this->prefix .
-                    "forums WHERE forum_type = 1 AND forum_password = '' ORDER BY left_id", 500);
-                $visible = array_values(array_filter($items, function ($row) {
-                    return $this->public_forum((int) $row['forum_id']);
-                }));
-                return ['items' => array_slice($visible, $offset, $limit)];
+                // Scan in keyset batches and apply anonymous ACL checks before
+                // offset/limit. A fixed first-page cap silently hid forums on
+                // larger boards and made later pages incomplete.
+                $visible = [];
+                $remaining_offset = $offset;
+                $last_left_id = 0;
+                $batch_size = 100;
+                do {
+                    $sql = 'SELECT forum_id, parent_id, forum_name, forum_desc,
+                        forum_topics_approved, forum_posts_approved, left_id FROM ' .
+                        $this->prefix . "forums WHERE forum_type = 1 AND forum_password = '' " .
+                        'AND left_id > ' . $last_left_id . ' ORDER BY left_id';
+                    $items = $this->fetch($sql, $batch_size);
+                    if (!$items) {
+                        break;
+                    }
+                    foreach ($items as $row) {
+                        $last_left_id = (int) $row['left_id'];
+                        if (!$this->public_forum((int) $row['forum_id'])) {
+                            continue;
+                        }
+                        if ($remaining_offset > 0) {
+                            --$remaining_offset;
+                            continue;
+                        }
+                        unset($row['left_id']);
+                        $visible[] = $row;
+                        if (count($visible) >= $limit) {
+                            break 2;
+                        }
+                    }
+                } while (count($items) === $batch_size);
+                return ['items' => $visible];
             case 'forums.get':
                 $id = $this->required_id($args, 'forum_id');
                 if (!$this->public_forum($id)) { return ['item' => null]; }
