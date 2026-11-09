@@ -27,8 +27,9 @@ class main_module
             }
             $action = $request->variable('action', '');
             if ($action === 'settings') {
-                $config->set('topofgames_phpbbmcp_enabled',
-                    $request->variable('enabled', 0) ? 1 : 0);
+                // Validate the complete submission before persisting either
+                // setting. An invalid proxy list must never partially change
+                // the endpoint's enabled state.
                 $raw_proxies = trim($request->variable('trusted_proxies', ''));
                 $list = $raw_proxies === '' ? [] : array_map('trim', explode(',', $raw_proxies));
                 if (count($list) > 16 || strlen($raw_proxies) > 1024) {
@@ -39,7 +40,9 @@ class main_module
                         trigger_error('Invalid trusted proxy IP address.' . adm_back_link($this->u_action), E_USER_WARNING);
                     }
                 }
+                $enabled = $request->variable('enabled', 0) ? 1 : 0;
                 $config->set('topofgames_phpbbmcp_trusted_proxies', implode(',', array_unique($list)));
+                $config->set('topofgames_phpbbmcp_enabled', $enabled);
             } elseif ($action === 'create') {
                 try {
                     $new_key = $store->issue($request->variable('label', '', true),
