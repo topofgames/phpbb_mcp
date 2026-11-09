@@ -45,7 +45,7 @@ class mcp_controller
             $result = array_merge(['resultType' => 'complete'], $result);
             $result['_meta'] = [
                 'io.modelcontextprotocol/serverInfo' => [
-                    'name' => 'phpbb-mcp', 'version' => '0.1.0-alpha',
+                    'name' => 'phpbb-mcp', 'version' => '0.1.1-alpha',
                 ],
             ];
         }
@@ -144,7 +144,7 @@ class mcp_controller
             return $this->success($id, [
                 'protocolVersion' => $selected,
                 'capabilities' => ['tools' => ['listChanged' => false]],
-                'serverInfo' => ['name' => 'phpbb-mcp', 'version' => '0.1.0-alpha'],
+                'serverInfo' => ['name' => 'phpbb-mcp', 'version' => '0.1.1-alpha'],
             ], false);
         }
 
