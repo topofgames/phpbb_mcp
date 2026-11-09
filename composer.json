@@ -3,7 +3,7 @@
   "type": "phpbb-extension",
   "description": "Native MCP server extension for phpBB by TOP OF GAMES",
   "license": "GPL-2.0-only",
-  "version": "0.1.1",
+  "version": "0.1.1-alpha",
   "require": {
     "php": ">=7.4"
   },
