@@ -4,6 +4,13 @@
   "description": "Native MCP server extension for phpBB by TOP OF GAMES",
   "license": "GPL-2.0-only",
   "version": "0.1.1-alpha",
+  "authors": [
+    {
+      "name": "TOP OF GAMES",
+      "homepage": "https://topof.games",
+      "role": "Developer"
+    }
+  ],
   "require": {
     "php": ">=7.4"
   },
