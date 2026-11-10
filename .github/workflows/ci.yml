@@ -26,6 +26,8 @@ jobs:
       - name: PHP syntax
         run: |
           find . -name '*.php' -not -path './vendor/*' -print0 | xargs -0 -n 1 php -l
+      - name: Extension manifest regression test
+        run: php tests/extension_manifest_test.php
       - name: Transport unit smoke tests
         run: |
           php tests/transport_validator_test.php
